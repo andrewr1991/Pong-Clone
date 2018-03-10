@@ -18,7 +18,7 @@ int main()
 
 	RenderWindow window(vm, "Pong");
 
-	const float paddleMovement = 0.075;
+	const float paddleMovement = 200;
 
 	Vector2f playerDimensions;
 	playerDimensions.x = 5;
@@ -38,7 +38,7 @@ int main()
 
 	const int ballRadius = 8;
 	const int ballPoints = 30;
-	const float ballMovement = 0.05;
+	const float ballMovement = 500;
 	CircleShape ball(ballRadius, ballPoints);
 	ball.setOrigin(ballRadius, ballRadius);
 	float ballXPosition = windowDimensions.x / 2;
@@ -49,8 +49,12 @@ int main()
 	BallXDirection ballXDirection = BallXDirection::LEFT;
 	BallYDirection ballYDirection = BallYDirection::UP;
 
+	Clock clock;
+
 	while (window.isOpen())
 	{
+		Time dt = clock.restart();
+
 		/*
 		************
 		Handle input
@@ -58,12 +62,12 @@ int main()
 		*/
 		if (Keyboard::isKeyPressed(Keyboard::Up) && player.getPosition().y >= 0)
 		{
-			playerYPosition -= paddleMovement;
+			playerYPosition -= (paddleMovement * dt.asSeconds());
 		}
 
 		if ((Keyboard::isKeyPressed(Keyboard::Down)) && (player.getPosition().y <= (windowDimensions.y - playerDimensions.y)))
 		{
-			playerYPosition += paddleMovement;
+			playerYPosition += (paddleMovement * dt.asSeconds());
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
@@ -83,22 +87,22 @@ int main()
 
 		if (ballXDirection == BallXDirection::LEFT)
 		{
-			ballXPosition -= ballMovement;
+			ballXPosition -= (ballMovement * dt.asSeconds());
 		}
 
 		if (ballXDirection == BallXDirection::RIGHT)
 		{
-			ballXPosition += ballMovement;
+			ballXPosition += (ballMovement * dt.asSeconds());
 		}
 
 		if (ballYDirection == BallYDirection::DOWN)
 		{
-			ballYPosition += ballMovement;
+			ballYPosition += (ballMovement * dt.asSeconds());
 		}
 
 		if (ballYDirection == BallYDirection::UP)
 		{
-			ballYPosition -= ballMovement;
+			ballYPosition -= (ballMovement * dt.asSeconds());
 		}
 
 		// Hitting player paddle
@@ -160,12 +164,12 @@ int main()
 		// player AI
 		if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) < 0) && computer.getPosition().y >= 0)
 		{
-			computerYPosition -= paddleMovement;
+			computerYPosition -= (paddleMovement * dt.asSeconds());
 		}
 
 		if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) > 0) && (computer.getPosition().y <= (windowDimensions.y - computerDimensions.y)))
 		{
-			computerYPosition += paddleMovement;
+			computerYPosition += (paddleMovement * dt.asSeconds());
 		}
 
 		/*
