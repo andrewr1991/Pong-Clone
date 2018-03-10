@@ -158,12 +158,12 @@ int main()
 		}
 
 		// player AI
-		if (ballYDirection == BallYDirection::UP && computer.getPosition().y >= 0)
+		if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) < 0) && computer.getPosition().y >= 0)
 		{
 			computerYPosition -= paddleMovement;
 		}
 
-		if (ballYDirection == BallYDirection::DOWN && (computer.getPosition().y <= (windowDimensions.y - computerDimensions.y)))
+		if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) > 0) && (computer.getPosition().y <= (windowDimensions.y - computerDimensions.y)))
 		{
 			computerYPosition += paddleMovement;
 		}
