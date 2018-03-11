@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 #include "SFML/Graphics.hpp"
-#include "time.h""
+#include "time.h"
 #include "stdlib.h"
 #include "sstream"
 
@@ -130,6 +130,16 @@ int main()
 		ballYDirection = BallYDirection::DOWN;
 	}
 
+	// Initial game positions
+	const int initialPlayerXPosition = 15;
+	float initialPlayerYPosition = windowDimensions.y / 2 - (player.getSize().y / 2);
+
+	const int initialComputerXPosition = windowDimensions.x - (playerXPosition + computerDimensions.x);
+	float initialComputerYPosition = windowDimensions.y / 2 - (computerDimensions.y / 2);
+
+	float initialBallXPosition = windowDimensions.x / 2;
+	float initialBallYPosition = windowDimensions.y / 2;
+
 	// Game loop
 	while (window.isOpen())
 	{
@@ -146,9 +156,22 @@ int main()
 			window.close();
 		}
 
+		if (gameState == GameState::PAUSED)
+		{
+			playerYPosition = initialPlayerYPosition;
+			computerYPosition = initialComputerYPosition;
+			ballXPosition = initialBallXPosition;
+			ballYPosition = initialBallYPosition;
+
+			player.setPosition(playerXPosition, playerYPosition);
+			computer.setPosition(computerXPosition, computerYPosition);
+			ball.setPosition(ballXPosition, ballYPosition);
+		}
+
 		if (Keyboard::isKeyPressed(Keyboard::Return) && gameState == GameState::PAUSED)
 		{
 			gameState = GameState::PLAYING;
+			printf("testing 1");
 		}
 
 		if (gameState == GameState::PLAYING)
@@ -162,105 +185,107 @@ int main()
 			{
 				playerYPosition += (paddleMovement * dt.asSeconds());
 			}
-		}
 
-		/*
-		****************
-		UPDATE THE FRAME
-		****************
-		*/
+			/*
+			****************
+			UPDATE THE FRAME
+			****************
+			*/
 
-		player.setPosition(playerXPosition, playerYPosition);
-		computer.setPosition(computerXPosition, computerYPosition);
-		ball.setPosition(ballXPosition, ballYPosition);
+			player.setPosition(playerXPosition, playerYPosition);
+			computer.setPosition(computerXPosition, computerYPosition);
+			ball.setPosition(ballXPosition, ballYPosition);
 
-		if (gameState == GameState::PLAYING)
-		{
-			if (ballXDirection == BallXDirection::LEFT)
+			if (gameState == GameState::PLAYING)
 			{
-				ballXPosition -= (ballMovement * dt.asSeconds());
-			}
+				if (ballXDirection == BallXDirection::LEFT)
+				{
+					ballXPosition -= (ballMovement * dt.asSeconds());
+				}
 
-			if (ballXDirection == BallXDirection::RIGHT)
-			{
-				ballXPosition += (ballMovement * dt.asSeconds());
-			}
+				else if (ballXDirection == BallXDirection::RIGHT)
+				{
+					ballXPosition += (ballMovement * dt.asSeconds());
+				}
 
-			if (ballYDirection == BallYDirection::DOWN)
-			{
-				ballYPosition += (ballMovement * dt.asSeconds());
-			}
+				if (ballYDirection == BallYDirection::DOWN)
+				{
+					ballYPosition += (ballMovement * dt.asSeconds());
+				}
 
-			if (ballYDirection == BallYDirection::UP)
-			{
-				ballYPosition -= (ballMovement * dt.asSeconds());
-			}
+				else if (ballYDirection == BallYDirection::UP)
+				{
+					ballYPosition -= (ballMovement * dt.asSeconds());
+				}
 
-			// Hitting player paddle
-			if (ball.getPosition().y >= player.getPosition().y &&
-				ball.getPosition().y <= (player.getPosition().y + playerDimensions.y) &&
-				(ball.getPosition().x - ballRadius) <= (player.getPosition().x + playerDimensions.x) &&
-				ballYDirection == BallYDirection::DOWN)
-			{
-				ballXDirection = BallXDirection::RIGHT;
-			}
+				// Hitting player paddle
+				if (ball.getPosition().y >= player.getPosition().y &&
+					ball.getPosition().y <= (player.getPosition().y + playerDimensions.y) &&
+					(ball.getPosition().x - ballRadius) <= (player.getPosition().x + playerDimensions.x) &&
+					ballYDirection == BallYDirection::DOWN)
+				{
+					ballXDirection = BallXDirection::RIGHT;
+				}
 
-			if (ball.getPosition().y >= player.getPosition().y &&
-				ball.getPosition().y <= (player.getPosition().y + playerDimensions.y) &&
-				(ball.getPosition().x - ballRadius) <= (player.getPosition().x + playerDimensions.x) &&
-				ballYDirection == BallYDirection::UP)
-			{
-				ballXDirection = BallXDirection::RIGHT;
-			}
+				else if (ball.getPosition().y >= player.getPosition().y &&
+					ball.getPosition().y <= (player.getPosition().y + playerDimensions.y) &&
+					(ball.getPosition().x - ballRadius) <= (player.getPosition().x + playerDimensions.x) &&
+					ballYDirection == BallYDirection::UP)
+				{
+					ballXDirection = BallXDirection::RIGHT;
+				}
 
-			// Hitting computer paddle
-			if (ball.getPosition().y >= computer.getPosition().y &&
-				ball.getPosition().y <= (computer.getPosition().y + computerDimensions.y) &&
-				(ball.getPosition().x + ballRadius) >= computer.getPosition().x &&
-				ballYDirection == BallYDirection::DOWN)
-			{
-				ballXDirection = BallXDirection::LEFT;
-			}
+				// Hitting computer paddle
+				if (ball.getPosition().y >= computer.getPosition().y &&
+					ball.getPosition().y <= (computer.getPosition().y + computerDimensions.y) &&
+					(ball.getPosition().x + ballRadius) >= computer.getPosition().x &&
+					ballYDirection == BallYDirection::DOWN)
+				{
+					ballXDirection = BallXDirection::LEFT;
+				}
 
-			if (ball.getPosition().y >= computer.getPosition().y &&
-				ball.getPosition().y <= (computer.getPosition().y + computerDimensions.y) &&
-				(ball.getPosition().x + ballRadius) >= computer.getPosition().x &&
-				ballYDirection == BallYDirection::UP)
-			{
-				ballXDirection = BallXDirection::LEFT;
-			}
+				else if (ball.getPosition().y >= computer.getPosition().y &&
+					ball.getPosition().y <= (computer.getPosition().y + computerDimensions.y) &&
+					(ball.getPosition().x + ballRadius) >= computer.getPosition().x &&
+					ballYDirection == BallYDirection::UP)
+				{
+					ballXDirection = BallXDirection::LEFT;
+				}
 
-			// Hitting top of screen
-			if ((ball.getPosition().y - ballRadius) <= 0)
-			{
-				ballYDirection = BallYDirection::DOWN;
-			}
+				// Hitting top or bottom of screen
+				if ((ball.getPosition().y - ballRadius) <= 0)
+				{
+					ballYDirection = BallYDirection::DOWN;
+				}
 
-			if ((ball.getPosition().y - ballRadius) <= 0)
-			{
-				ballYDirection = BallYDirection::DOWN;
-			}
+				else if ((ball.getPosition().y + ballRadius) >= windowDimensions.y)
+				{
+					ballYDirection = BallYDirection::UP;
+				}
 
-			// Hitting bottom of screen
-			if ((ball.getPosition().y + ballRadius) >= windowDimensions.y)
-			{
-				ballYDirection = BallYDirection::UP;
-			}
+				// Player AI
+				if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) < 0) && computer.getPosition().y >= 0)
+				{
+					computerYPosition -= (paddleMovement * dt.asSeconds());
+				}
 
-			if ((ball.getPosition().y + ballRadius) >= windowDimensions.y)
-			{
-				ballYDirection = BallYDirection::UP;
-			}
+				else if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) > 0) && (computer.getPosition().y <= (windowDimensions.y - computerDimensions.y)))
+				{
+					computerYPosition += (paddleMovement * dt.asSeconds());
+				}
 
-			// player AI
-			if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) < 0) && computer.getPosition().y >= 0)
-			{
-				computerYPosition -= (paddleMovement * dt.asSeconds());
-			}
+				// Scoring a point
+				if ((ball.getPosition().x - ballRadius) <= playerXPosition)
+				{
+					computerScore++;
+					gameState = GameState::PAUSED;
+				}
 
-			if ((ball.getPosition().y - (computer.getPosition().y + (computerDimensions.y / 2)) > 0) && (computer.getPosition().y <= (windowDimensions.y - computerDimensions.y)))
-			{
-				computerYPosition += (paddleMovement * dt.asSeconds());
+				else if ((ball.getPosition().x + ballRadius) >= (computerXPosition + computerDimensions.x))
+				{
+					playerScore++;
+					gameState = GameState::PAUSED;
+				}
 			}
 		}
 
