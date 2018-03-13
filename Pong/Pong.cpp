@@ -70,24 +70,27 @@ int main()
 
 	Text playerScoreText;
 	Text computerScoreText;
+	Text startGameText;
 
 	playerScoreText.setFont(scoreFont);
 	computerScoreText.setFont(scoreFont);
+	startGameText.setFont(scoreFont);
 
 	playerScoreText.setString("Score: 0");
 	computerScoreText.setString("Score: 0");
+	startGameText.setString("Press Enter to start!");
 
 	playerScoreText.setCharacterSize(15);
 	computerScoreText.setCharacterSize(15);
+	startGameText.setCharacterSize(50);
 
 	playerScoreText.setFillColor(Color::White);
 	computerScoreText.setFillColor(Color::White);
+	startGameText.setFillColor(Color::White);
 
-	playerScoreText.setPosition(100, 15);
-	computerScoreText.setPosition(800, 15);
-
-	FloatRect playerScoreRect = playerScoreText.getLocalBounds();
+	FloatRect playerScoreRect   = playerScoreText.getLocalBounds();
 	FloatRect computerScoreRect = computerScoreText.getLocalBounds();
+	FloatRect startGameRect     = startGameText.getLocalBounds();
 
 	playerScoreText.setOrigin(playerScoreRect.left +
 		playerScoreRect.width / 2.0f,
@@ -99,6 +102,15 @@ int main()
 		computerScoreRect.top +
 		computerScoreRect.height / 2.0f);
 
+	startGameText.setOrigin(startGameRect.left +
+		startGameRect.width / 2.0f,
+		startGameRect.top +
+		startGameRect.height / 2.0f);
+
+	playerScoreText.setPosition(100, 15);
+	computerScoreText.setPosition(800, 15);
+	startGameText.setPosition(windowDimensions.x / 2, windowDimensions.y / 2);
+
 	// Clock object to take care of the frame rate
 	Clock clock;
 
@@ -109,6 +121,7 @@ int main()
 	// Randomize the initial direction of the ball
 	srand(time(NULL));
 	int randNum = rand() % 2 + 1;
+	printf("%d\n", randNum);
 
 	if (randNum == 1)
 	{
@@ -120,6 +133,7 @@ int main()
 	}
 
 	randNum = rand() % 2 + 1;
+	printf("%d\n", randNum);
 
 	if (randNum == 1)
 	{
@@ -171,7 +185,6 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Return) && gameState == GameState::PAUSED)
 		{
 			gameState = GameState::PLAYING;
-			printf("testing 1");
 		}
 
 		if (gameState == GameState::PLAYING)
@@ -275,13 +288,13 @@ int main()
 				}
 
 				// Scoring a point
-				if ((ball.getPosition().x - ballRadius) <= playerXPosition)
+				if ((ball.getPosition().x - ballRadius) <= 0)
 				{
 					computerScore++;
 					gameState = GameState::PAUSED;
 				}
 
-				else if ((ball.getPosition().x + ballRadius) >= (computerXPosition + computerDimensions.x))
+				else if ((ball.getPosition().x + ballRadius) >= (windowDimensions.x))
 				{
 					playerScore++;
 					gameState = GameState::PAUSED;
@@ -297,6 +310,10 @@ int main()
 		computerStream << "Score = " << computerScore;
 		computerScoreText.setString(computerStream.str());
 
+		stringstream startGameStream;
+		startGameStream << "Press Enter to start!";
+		startGameText.setString(startGameStream.str());
+
 		/*
 		**************
 		Draw the scene
@@ -304,11 +321,21 @@ int main()
 		*/
 
 		window.clear();
+
+		if (gameState == GameState::PLAYING)
+		{
+			window.draw(ball);
+			window.draw(playerScoreText);
+			window.draw(computerScoreText);
+		}
+
+		if (gameState == GameState::PAUSED)
+		{
+			window.draw(startGameText);
+		}
+
 		window.draw(player);
 		window.draw(computer);
-		window.draw(ball);
-		window.draw(playerScoreText);
-		window.draw(computerScoreText);
 		window.display();
 	}
     return 0;
